@@ -110,4 +110,4 @@ jobs:
           rm pumpfun_tg_bot_latest.tar
           docker stop pumpfun_tg_bot || true
           docker rm pumpfun_tg_bot || true
-          docker run --env-file .env -d --name pumpfun_tg_bot -v ./pumpfun_tg_bot:/var pumpfun_tg_bot:latest
+          docker run --env-file .env -d --name pumpfun_tg_bot -v ~/pumpfun_tg_bot:/var pumpfun_tg_bot:latest
