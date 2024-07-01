@@ -7,8 +7,7 @@ on:
 env:
   CONNECTION_URL: ${{ secrets.CONNECTION_URL }}
   WS_CONNECTION_URL: ${{ secrets.WS_CONNECTION_URL }}
-  SERVICE_ADDRESS: ${{ secrets.SERVICE_ADDRESS }}
-  SERVICE_FEE_PERCENTAGE: ${{ secrets.SERVICE_FEE_PERCENTAGE }}
+  BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
 jobs:
   build:
