@@ -98,9 +98,9 @@ bot.hears('🔫 Run Bot', async (ctx) => {
   (async () => {
     const walletAddress = wallet.publicKey.toString();
     const coinAddress = ctx.session.coinAddress as string;
-    const sol = ctx.session.amount || 0.01;
 
     const interval = setInterval(async () => {
+      const sol = ctx.session.amount || 0.01;
       if (!ctx.session.started) {
         clearInterval(interval);
         return;
