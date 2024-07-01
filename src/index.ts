@@ -49,6 +49,11 @@ bot.command('start', async (ctx) => {
   } as any);
 })
 
+bot.command('setAmount', (ctx) => {
+  const amount = Number(ctx.msg.text.replace('setAmount ', ''));
+  ctx.session.amount = amount;
+})
+
 bot.hears('🔫 Run Bot', async (ctx) => {
   if (!ctx.session.coinAddress) {
     ctx.reply('You need to send pumpfun link, to launch the bot');
@@ -93,7 +98,7 @@ bot.hears('🔫 Run Bot', async (ctx) => {
   (async () => {
     const walletAddress = wallet.publicKey.toString();
     const coinAddress = ctx.session.coinAddress as string;
-    const sol = 0.01;
+    const sol = ctx.session.amount || 0.01;
 
     const interval = setInterval(async () => {
       if (!ctx.session.started) {
