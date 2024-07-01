@@ -56,7 +56,7 @@ jobs:
       run: |
         if [ -f ./pumpfun_tg_bot_latest.tar ]; then
           echo "Docker image tar file exists."
-          ls -lh ./pumpfun_tg_bot.tar
+          ls -lh ./pumpfun_tg_bot_latest.tar
         else
           echo "Docker image tar file does not exist."
           exit 1
