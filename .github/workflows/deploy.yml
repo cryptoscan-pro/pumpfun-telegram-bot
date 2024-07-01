@@ -1,0 +1,114 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+env:
+  CONNECTION_URL: ${{ secrets.CONNECTION_URL }}
+  WS_CONNECTION_URL: ${{ secrets.WS_CONNECTION_URL }}
+  SERVICE_ADDRESS: ${{ secrets.SERVICE_ADDRESS }}
+  SERVICE_FEE_PERCENTAGE: ${{ secrets.SERVICE_FEE_PERCENTAGE }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Log in to NPM
+      run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+    - name: Save Docker image to file
+      run: docker build --build-arg NPM_TOKEN=${{ secrets.NPM_TOKEN }} -t pumpfun_tg_bot:latest .
+
+    - name: Check docker images
+      run: docker images
+
+    - name: Verify Docker image existence
+      run: |
+        if docker image inspect pumpfun_tg_bot:latest > /dev/null 2>&1; then
+          echo "Docker image myapp:latest exists."
+        else
+          echo "Docker image myapp:latest does not exist."
+          exit 1
+        fi
+
+    - name: Save Docker image to file
+      run: |
+        docker save pumpfun_tg_bot:latest -o ./pumpfun_tg_bot_latest.tar
+        if [ $? -eq 0 ]; then
+          echo "Docker image saved successfully."
+        else
+          echo "Failed to save Docker image."
+          docker image inspect pumpfun_tg_bot:latest
+          exit 1
+        fi
+
+    - name: Check if Docker image tar exists and has size
+      run: |
+        if [ -f ./pumpfun_tg_bot_latest.tar ]; then
+          echo "Docker image tar file exists."
+          ls -lh ./pumpfun_tg_bot.tar
+        else
+          echo "Docker image tar file does not exist."
+          exit 1
+        fi
+
+    - name: Set access rights
+      run: chmod 644 pumpfun_tg_bot_latest.tar
+
+    - name: Create .env file
+      run: |
+        for var in $(printenv | cut -d'=' -f1); do
+          echo "$var=${!var}" >> .env
+        done
+        if [ $? -eq 0 ]; then
+          echo ".env file created successfully."
+        else
+          echo "Failed to create .env file."
+          exit 1
+        fi
+
+    - name: Copy Docker image to remote server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: ${{ secrets.PORT }}
+        source: "pumpfun_tg_bot_latest.tar"
+        target: "."
+    - name: Copy .env to remote server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        source: ".env"
+        target: "."
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: ${{ secrets.PORT }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: SSH and load Docker image
+      uses: appleboy/ssh-action@v0.1.1
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+          docker load -i ~/pumpfun_tg_bot_latest.tar
+          rm pumpfun_tg_bot_latest.tar
+          docker stop pumpfun_tg_bot || true
+          docker rm pumpfun_tg_bot || true
+          docker run --env-file .env -d --name pumpfun_tg_bot pumpfun_tg_bot:latest

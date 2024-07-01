@@ -1,0 +1,29 @@
+{
+  "name": "@cryptoscan/pumpfun-tg-bot",
+  "module": "src/index.ts",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "login": "bun src/login.ts"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@cryptoscan/pumpfun-sdk": "latest",
+    "@cryptoscan/solana-send-transaction": "workspace:^0.1.2",
+    "@cryptoscan/solana-wallet-sdk": "latest",
+    "@cryptoscan/swap-sdk": "latest",
+    "@cryptoscan/transactions-sdk": "latest",
+    "@grammyjs/conversations": "^1.2.0",
+    "@grammyjs/hydrate": "^1.4.1",
+    "@solana/web3.js": "^1.94.0",
+    "bs58": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "grammy": "^1.25.1",
+    "tweetnacl": "^1.0.3"
+  }
+}
