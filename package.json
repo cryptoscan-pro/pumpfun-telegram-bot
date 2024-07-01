@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@cryptoscan/pumpfun-sdk": "latest",
-    "@cryptoscan/solana-send-transaction": "workspace:^0.1.2",
+    "@cryptoscan/solana-send-transaction": "latest",
     "@cryptoscan/solana-wallet-sdk": "latest",
     "@cryptoscan/swap-sdk": "latest",
     "@cryptoscan/transactions-sdk": "latest",
