@@ -50,8 +50,9 @@ bot.command('start', async (ctx) => {
 })
 
 bot.command('setAmount', (ctx) => {
-  const amount = Number(ctx.msg.text.replace('setAmount ', ''));
+  const amount = Number(ctx.msg.text.split(' ')[1]);
   ctx.session.amount = amount;
+  ctx.reply('amount set - ' + amount);
 })
 
 bot.hears('🔫 Run Bot', async (ctx) => {
